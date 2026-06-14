@@ -38,25 +38,31 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Hero Section -->
-            <section class="hero">
-                <div class="hero-content">
-                    <h1>How Are You Feeling Tonight?</h1>
-                    <p>Choose a mood that best describes how you're feeling to get personalized recommendations.</p>
+        <section class="mood-stage">
+            <div class="mood-collage-shell" aria-hidden="true">
+                <div class="mood-collage" id="moodCollage"></div>
+            </div>
+
+            <div class="container">
+                <!-- Hero Section -->
+                <section class="hero mood-hero">
+                    <div class="hero-content">
+                        <h1>How Are You Feeling Tonight?</h1>
+                        <p>Choose a mood that best describes how you're feeling to get personalized recommendations.</p>
+                    </div>
+                </section>
+
+                <!-- Mood Selection Grid -->
+                <div class="mood-grid" id="moodGrid">
+                    <!-- Populated by JavaScript -->
                 </div>
-            </section>
 
-            <!-- Mood Selection Grid -->
-            <div class="mood-grid" id="moodGrid">
-                <!-- Populated by JavaScript -->
-            </div>
-
-            <!-- Surprise Me Button -->
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
+                <!-- Surprise Me Button -->
+                <div style="text-align: center; margin-bottom: var(--spacing-xl);">
                 <button class="btn btn-secondary" id="surpriseBtn">Surprise Me — Pick a random mood</button>
+                </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Footer -->

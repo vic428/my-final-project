@@ -35,6 +35,7 @@ const HOME_CATEGORY_LABELS = {
 const HOME_SECTION_LIMIT = 5;
 const HOME_CAROUSEL_LIMIT = 6;
 const HOME_CAROUSEL_INTERVAL_MS = 5500;
+const MOOD_COLLAGE_LIMIT = 15;
 
 const homeState = {
     category: 'all',
@@ -678,7 +679,7 @@ function renderHomeCarousel() {
 }
 
 function buildHomeCarouselItems() {
-    const filteredItems = dedupeHomeItems([
+    const filteredItems = dedupeMediaItems([
         ...filterHomeItems(homeState.sections.trending, homeState.category),
         ...filterHomeItems(homeState.sections.newReleases, homeState.category),
         ...filterHomeItems(homeState.sections.popular, homeState.category)
@@ -690,7 +691,7 @@ function buildHomeCarouselItems() {
     }
 
     homeState.carouselUsesFallback = homeState.category !== 'all';
-    return dedupeHomeItems([
+    return dedupeMediaItems([
         ...homeState.sections.trending,
         ...homeState.sections.newReleases,
         ...homeState.sections.popular
@@ -699,7 +700,7 @@ function buildHomeCarouselItems() {
         .slice(0, HOME_CAROUSEL_LIMIT);
 }
 
-function dedupeHomeItems(items = []) {
+function dedupeMediaItems(items = []) {
     const seenIds = new Set();
 
     return items.filter(item => {
@@ -839,6 +840,47 @@ async function initializeMood() {
 
     const html = moods.map(mood => ui.createMoodCardHTML(mood)).join('');
     if (moodGrid) moodGrid.innerHTML = html;
+    void initializeMoodCollage();
+}
+
+async function initializeMoodCollage() {
+    const collage = document.getElementById('moodCollage');
+    if (!collage) return;
+
+    collage.innerHTML = '';
+    collage.dataset.state = 'loading';
+
+    const results = await Promise.allSettled([
+        api.getTrending('movie'),
+        api.getPopular('movie'),
+        api.getUpcoming()
+    ]);
+
+    const items = buildMoodCollageItems(results);
+    if (items.length === 0) {
+        collage.dataset.state = 'empty';
+        return;
+    }
+
+    collage.innerHTML = items.map(item => {
+        const posterUrl = api.getImageUrl(item.poster_path, 'poster');
+        return `<div class="mood-collage-poster" style="--mood-poster-image: url('${posterUrl}');"></div>`;
+    }).join('');
+    collage.dataset.state = 'ready';
+}
+
+function buildMoodCollageItems(results = []) {
+    return dedupeMediaItems(
+        results.flatMap(result => {
+            if (result.status !== 'fulfilled' || !Array.isArray(result.value)) {
+                return [];
+            }
+
+            return result.value;
+        })
+    )
+        .filter(item => item?.poster_path)
+        .slice(0, MOOD_COLLAGE_LIMIT);
 }
 
 async function initializeDiscovery() {
