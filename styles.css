@@ -256,9 +256,26 @@ nav a.active::after {
     pointer-events: none;
 }
 
+.page-home .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    background:
+        linear-gradient(90deg, rgba(10, 10, 12, 0.96) 0%, rgba(10, 10, 12, 0.62) 40%, rgba(10, 10, 12, 0.18) 100%),
+        var(--hero-poster, none) right 6% center / auto 100% no-repeat;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.page-home .hero.hero-has-poster::after {
+    opacity: 0.92;
+}
+
 .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 42rem;
 }
 
@@ -1055,6 +1072,12 @@ footer a {
     .page-home .hero {
         min-height: 70vh;
     }
+
+    .page-home .hero.hero-has-poster::after {
+        background:
+            linear-gradient(90deg, rgba(10, 10, 12, 0.95) 0%, rgba(10, 10, 12, 0.58) 42%, rgba(10, 10, 12, 0.12) 100%),
+            var(--hero-poster, none) right 2% center / auto 92% no-repeat;
+    }
 }
 
 @media (max-width: 920px) {
@@ -1106,6 +1129,13 @@ footer a {
     .page-home .hero {
         min-height: auto;
         padding: 5.5rem 1.25rem 2.5rem;
+    }
+
+    .page-home .hero.hero-has-poster::after {
+        background:
+            linear-gradient(180deg, rgba(10, 10, 12, 0.28) 0%, rgba(10, 10, 12, 0.82) 72%, rgba(10, 10, 12, 0.96) 100%),
+            var(--hero-poster, none) center top / cover no-repeat;
+        opacity: 0.42;
     }
 
     .hero h1 {

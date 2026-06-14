@@ -449,6 +449,7 @@ async function initializeHome() {
     try {
         ui.showLoading('#trendingGrid');
         const trending = await api.getTrending('movie');
+        updateHomeHeroPoster(trending);
         ui.populateGrid('#trendingGrid', trending.slice(0, 5));
     } catch (error) {
         ui.showError('Error loading trending', '#trendingGrid');
@@ -457,6 +458,7 @@ async function initializeHome() {
     try {
         ui.showLoading('#newReleasesGrid');
         const newReleases = await api.getUpcoming();
+        updateHomeHeroPoster(newReleases);
         ui.populateGrid('#newReleasesGrid', newReleases.slice(0, 5));
     } catch (error) {
         ui.showError('Error loading new releases', '#newReleasesGrid');
@@ -465,10 +467,29 @@ async function initializeHome() {
     try {
         ui.showLoading('#popularGrid');
         const popular = await api.getPopular('movie');
+        updateHomeHeroPoster(popular);
         ui.populateGrid('#popularGrid', popular.slice(0, 5));
     } catch (error) {
         ui.showError('Error loading popular', '#popularGrid');
     }
+}
+
+function updateHomeHeroPoster(items = []) {
+    const hero = document.getElementById('homeHero');
+    if (!hero || hero.dataset.posterLoaded === 'true') return;
+
+    const featuredItem = items.find(item => item?.poster_path || item?.backdrop_path);
+    if (!featuredItem) return;
+
+    const imageUrl = featuredItem.poster_path ?
+        api.getImageUrl(featuredItem.poster_path, 'poster') :
+        api.getImageUrl(featuredItem.backdrop_path, 'backdrop');
+
+    if (!imageUrl) return;
+
+    hero.style.setProperty('--hero-poster', `url("${imageUrl}")`);
+    hero.classList.add('hero-has-poster');
+    hero.dataset.posterLoaded = 'true';
 }
 
 async function initializeMood() {
