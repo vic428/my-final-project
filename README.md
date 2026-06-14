@@ -92,6 +92,9 @@ This project can deploy to GitHub Pages with a public runtime config generated d
 2. Add these repository secrets:
    - `TMDB_API_KEY`
    - `YOUTUBE_API_KEY`
+   The value must be the real key itself, not a label. For example, do not paste `TMDB API KEY` or `YOUTUBE API KEY` as text.
+   `TMDB_API_KEY` should look like a 32-character hex string such as `4aaa...`.
+   `YOUTUBE_API_KEY` should usually start with `AIza`.
 3. Push to the `main` branch
 4. In `Settings -> Pages`, set the source to `GitHub Actions`
 
@@ -104,6 +107,8 @@ npm run build:runtime-config
 That generates a local `env.json` from `.env`, and the file stays ignored by git.
 
 The Pages workflow now publishes a dedicated `dist/` folder so the deployed artifact always includes the generated `env.json`.
+
+If deployment succeeds but the browser shows `401 Unauthorized` with `api_key=TMDB API KEY`, your GitHub secret value is wrong and needs to be replaced with the real API key.
 
 
 

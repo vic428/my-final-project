@@ -20,6 +20,11 @@ function validateTmdbApiKey() {
         return false;
     }
 
+    if (!/^[a-f0-9]{32}$/i.test(process.env.TMDB_API_KEY)) {
+        console.error('TMDB_API_KEY is invalid. Use the actual 32-character TMDB API key value, not a label like "TMDB API KEY".');
+        return false;
+    }
+
     return true;
 }
 
@@ -31,6 +36,11 @@ function validateYoutubeApiKey() {
 
     if (process.env.YOUTUBE_API_KEY.includes('.apps.googleusercontent.com')) {
         console.error('YOUTUBE_API_KEY is using a Google OAuth client ID. Create a YouTube Data API key instead.');
+        return false;
+    }
+
+    if (!/^AIza[0-9A-Za-z_-]{20,}$/.test(process.env.YOUTUBE_API_KEY)) {
+        console.error('YOUTUBE_API_KEY is invalid. Use the actual Google API key value, which usually starts with "AIza".');
         return false;
     }
 
