@@ -2,6 +2,7 @@
     "name": "film-discovery-app",
     "private": true,
     "scripts": {
+        "build:pages-dist": "node scripts/prepare-pages-dist.js",
         "build:runtime-config": "node scripts/generate-env-json.js",
         "start": "node server.js",
         "dev": "node server.js"

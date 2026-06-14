@@ -33,14 +33,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare Pages dist
+        run: npm run build:pages-dist
+
       - name: Generate runtime config
         env:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: npm run build:runtime-config
+        run: npm run build:runtime-config -- --output=dist/env.json
 
       - name: Add Pages marker
-        run: echo "" > .nojekyll
+        run: echo "" > dist/.nojekyll
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -48,7 +51,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: dist
 
       - name: Deploy to GitHub Pages
         id: deployment

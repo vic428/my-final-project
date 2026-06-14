@@ -103,6 +103,8 @@ npm run build:runtime-config
 ```
 That generates a local `env.json` from `.env`, and the file stays ignored by git.
 
+The Pages workflow now publishes a dedicated `dist/` folder so the deployed artifact always includes the generated `env.json`.
+
 
 
 ## Module Documentation

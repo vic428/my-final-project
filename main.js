@@ -11,7 +11,10 @@ async function loadRuntimeEnv() {
     globalThis.process ??= { env: {} };
 
     try {
-        const response = await fetch('env.json', { cache: 'no-store' });
+        const envUrl = new URL('env.json', window.location.href);
+        envUrl.searchParams.set('v', Date.now().toString());
+
+        const response = await fetch(envUrl, { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`Runtime env request failed with ${response.status}`);
         }

@@ -3,8 +3,10 @@ const path = require('path');
 
 const ROOT_DIR = path.join(__dirname, '..');
 const ENV_FILE_PATH = path.join(ROOT_DIR, '.env');
-const OUTPUT_FILE_PATH = path.join(ROOT_DIR, 'env.json');
 const CLIENT_ENV_KEYS = ['TMDB_API_KEY', 'YOUTUBE_API_KEY'];
+const outputArgument = process.argv.find(argument => argument.startsWith('--output='));
+const outputPathValue = outputArgument ? outputArgument.split('=')[1] : 'env.json';
+const OUTPUT_FILE_PATH = path.resolve(ROOT_DIR, outputPathValue);
 
 function loadEnvFromFile(filePath) {
     if (!fs.existsSync(filePath)) return;
@@ -53,5 +55,6 @@ if (missingKeys.length > 0) {
     process.exit(1);
 }
 
+fs.mkdirSync(path.dirname(OUTPUT_FILE_PATH), { recursive: true });
 fs.writeFileSync(OUTPUT_FILE_PATH, `${JSON.stringify(clientEnv, null, 2)}\n`, 'utf8');
 console.log(`Generated ${path.basename(OUTPUT_FILE_PATH)} with ${CLIENT_ENV_KEYS.join(', ')}`);
