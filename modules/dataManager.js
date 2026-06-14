@@ -266,6 +266,23 @@ export function getUserPreferences() {
 }
 
 /**
+ * Save theme preference
+ * @param {string} theme - 'dark' or 'light'
+ */
+export function saveThemePreference(theme) {
+    saveUserPreferences({ theme });
+}
+
+/**
+ * Get saved theme preference
+ * @returns {string} Theme name
+ */
+export function getThemePreference() {
+    const preferences = getUserPreferences();
+    return preferences.theme === 'light' ? 'light' : 'dark';
+}
+
+/**
  * Clear all app data
  */
 export function clearAllData() {

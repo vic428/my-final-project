@@ -7,6 +7,13 @@ import * as eventHandler from './modules/eventHandler.js';
 import * as animations from './modules/animations.js';
 import * as dataManager from './modules/dataManager.js';
 
+const THEME_META_COLORS = {
+    dark: '#0A0A0C',
+    light: '#F6F2EB'
+};
+
+applyTheme(getInitialTheme());
+
 async function loadRuntimeEnv() {
     globalThis.process ??= { env: {} };
 
@@ -26,11 +33,64 @@ async function loadRuntimeEnv() {
     }
 }
 
+function getInitialTheme() {
+    try {
+        return dataManager.getThemePreference();
+    } catch (error) {
+        return 'dark';
+    }
+}
+
+function applyTheme(theme) {
+    const resolvedTheme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = resolvedTheme;
+    document.documentElement.style.colorScheme = resolvedTheme;
+
+    if (document.body) {
+        document.body.dataset.theme = resolvedTheme;
+    }
+
+    updateThemeMetaColor(resolvedTheme);
+    updateThemeToggleState(resolvedTheme);
+}
+
+function initializeThemeToggle() {
+    const toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+
+    applyTheme(getInitialTheme());
+
+    toggle.addEventListener('click', () => {
+        const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        applyTheme(nextTheme);
+        dataManager.saveThemePreference(nextTheme);
+    });
+}
+
+function updateThemeToggleState(theme) {
+    const toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+
+    const isLight = theme === 'light';
+    toggle.dataset.theme = theme;
+    toggle.setAttribute('aria-pressed', String(isLight));
+    toggle.setAttribute('aria-label', isLight ? 'Activate dark theme' : 'Activate light theme');
+}
+
+function updateThemeMetaColor(theme) {
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', THEME_META_COLORS[theme] || THEME_META_COLORS.dark);
+    }
+}
+
 /**
  * Initialize app on page load
  */
 document.addEventListener('DOMContentLoaded', async () => {
+    applyTheme(getInitialTheme());
     await loadRuntimeEnv();
+    initializeThemeToggle();
 
     // Initialize event listeners
     eventHandler.setupEventListeners();
