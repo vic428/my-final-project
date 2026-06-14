@@ -33,6 +33,7 @@
     <main>
         <!-- Hero Section -->
         <section class="hero" id="homeHero">
+            <div class="hero-carousel-stage" id="homeHeroCarousel" aria-hidden="true"></div>
             <div class="hero-content">
                 <p class="hero-kicker">Movie night, minus the endless scrolling</p>
                 <h1>Discover Your Next Favorite Film</h1>
@@ -41,6 +42,16 @@
                     <a href="mood.html" class="btn btn-primary">Choose My Mood</a>
                     <a href="discovery.html" class="btn btn-secondary">Browse by Genre</a>
                 </div>
+            </div>
+            <div class="hero-featured" id="homeHeroFeatured" aria-live="polite" hidden>
+                <p class="hero-featured-label" id="homeHeroLabel">Featured Now</p>
+                <h2 class="hero-featured-title" id="homeHeroTitle">Loading featured titles...</h2>
+                <p class="hero-featured-meta" id="homeHeroMeta">We are pulling together a few standout picks for the home page.</p>
+            </div>
+            <div class="hero-carousel-controls" id="homeHeroControls" hidden>
+                <button type="button" class="hero-carousel-button" id="heroCarouselPrev" aria-label="Show previous featured movie">&#8249;</button>
+                <div class="hero-carousel-dots" id="homeHeroDots" role="tablist" aria-label="Featured movie carousel navigation"></div>
+                <button type="button" class="hero-carousel-button" id="heroCarouselNext" aria-label="Show next featured movie">&#8250;</button>
             </div>
         </section>
 
@@ -96,7 +107,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Film Discovery. All rights reserved. | <a href="#about">About Us</a> | <a href="#contact">Contact</a> | <a href="#privacy">Privacy Policy</a></p>
+        <p>&copy; 2026 Film Discovery. All rights reserved.</p>
     </footer>
 
     <script type="module" src="main.js"></script>

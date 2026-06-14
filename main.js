@@ -7,10 +7,28 @@ import * as eventHandler from './modules/eventHandler.js';
 import * as animations from './modules/animations.js';
 import * as dataManager from './modules/dataManager.js';
 
+async function loadRuntimeEnv() {
+    globalThis.process ??= { env: {} };
+
+    try {
+        const response = await fetch('env.json', { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`Runtime env request failed with ${response.status}`);
+        }
+
+        const env = await response.json();
+        Object.assign(process.env, env);
+    } catch (error) {
+        console.warn('Runtime environment variables could not be loaded. API-backed features may be unavailable.', error);
+    }
+}
+
 /**
  * Initialize app on page load
  */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRuntimeEnv();
+
     // Initialize event listeners
     eventHandler.setupEventListeners();
     

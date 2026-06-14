@@ -6,6 +6,55 @@ import * as api from './api.js';
 import * as ui from './ui.js';
 import * as dataManager from './dataManager.js';
 
+const HOME_CATEGORY_GENRES = {
+    all: null,
+    action: 28,
+    comedy: 35,
+    drama: 18,
+    horror: 27,
+    scifi: 878,
+    romance: 10749,
+    documentary: 99,
+    animation: 16,
+    thriller: 53
+};
+
+const HOME_CATEGORY_LABELS = {
+    all: 'All',
+    action: 'Action',
+    comedy: 'Comedy',
+    drama: 'Drama',
+    horror: 'Horror',
+    scifi: 'Sci-Fi',
+    romance: 'Romance',
+    documentary: 'Documentary',
+    animation: 'Animation',
+    thriller: 'Thriller'
+};
+
+const HOME_SECTION_LIMIT = 5;
+const HOME_CAROUSEL_LIMIT = 6;
+const HOME_CAROUSEL_INTERVAL_MS = 5500;
+
+const homeState = {
+    category: 'all',
+    sections: {
+        trending: [],
+        newReleases: [],
+        popular: []
+    },
+    statuses: {
+        trending: 'idle',
+        newReleases: 'idle',
+        popular: 'idle'
+    },
+    carouselItems: [],
+    carouselUsesFallback: false,
+    activeSlideIndex: 0,
+    carouselTimerId: null,
+    interactionsBound: false
+};
+
 /**
  * Setup all event listeners
  */
@@ -446,50 +495,335 @@ export function initializePage() {
 }
 
 async function initializeHome() {
-    try {
-        ui.showLoading('#trendingGrid');
-        const trending = await api.getTrending('movie');
-        updateHomeHeroPoster(trending);
-        ui.populateGrid('#trendingGrid', trending.slice(0, 5));
-    } catch (error) {
-        ui.showError('Error loading trending', '#trendingGrid');
-    }
+    resetHomeState();
+    bindHomePageInteractions();
 
-    try {
-        ui.showLoading('#newReleasesGrid');
-        const newReleases = await api.getUpcoming();
-        updateHomeHeroPoster(newReleases);
-        ui.populateGrid('#newReleasesGrid', newReleases.slice(0, 5));
-    } catch (error) {
-        ui.showError('Error loading new releases', '#newReleasesGrid');
-    }
+    ui.showLoading('#trendingGrid');
+    ui.showLoading('#newReleasesGrid');
+    ui.showLoading('#popularGrid');
 
-    try {
-        ui.showLoading('#popularGrid');
-        const popular = await api.getPopular('movie');
-        updateHomeHeroPoster(popular);
-        ui.populateGrid('#popularGrid', popular.slice(0, 5));
-    } catch (error) {
-        ui.showError('Error loading popular', '#popularGrid');
+    const [trendingResult, newReleasesResult, popularResult] = await Promise.allSettled([
+        api.getTrending('movie'),
+        api.getUpcoming(),
+        api.getPopular('movie')
+    ]);
+
+    applyHomeSectionResult('trending', trendingResult);
+    applyHomeSectionResult('newReleases', newReleasesResult);
+    applyHomeSectionResult('popular', popularResult);
+
+    renderHomeContent();
+}
+
+function resetHomeState() {
+    homeState.category = 'all';
+    homeState.sections = {
+        trending: [],
+        newReleases: [],
+        popular: []
+    };
+    homeState.statuses = {
+        trending: 'idle',
+        newReleases: 'idle',
+        popular: 'idle'
+    };
+    homeState.carouselItems = [];
+    homeState.carouselUsesFallback = false;
+    homeState.activeSlideIndex = 0;
+    stopHomeCarousel();
+}
+
+function bindHomePageInteractions() {
+    if (homeState.interactionsBound) return;
+
+    const previousButton = document.getElementById('heroCarouselPrev');
+    const nextButton = document.getElementById('heroCarouselNext');
+    const hero = document.getElementById('homeHero');
+
+    previousButton?.addEventListener('click', () => {
+        showHomeCarouselSlide(homeState.activeSlideIndex - 1);
+        restartHomeCarousel();
+    });
+
+    nextButton?.addEventListener('click', () => {
+        showHomeCarouselSlide(homeState.activeSlideIndex + 1);
+        restartHomeCarousel();
+    });
+
+    hero?.addEventListener('mouseenter', stopHomeCarousel);
+    hero?.addEventListener('mouseleave', startHomeCarousel);
+
+    document.addEventListener('visibilitychange', handleHomeVisibilityChange);
+    document.addEventListener('categoryChanged', handleHomeCategoryChange);
+
+    homeState.interactionsBound = true;
+}
+
+function handleHomeVisibilityChange() {
+    if (document.hidden) {
+        stopHomeCarousel();
+    } else {
+        startHomeCarousel();
     }
 }
 
-function updateHomeHeroPoster(items = []) {
+function handleHomeCategoryChange(event) {
+    if (!document.getElementById('homeHero')) return;
+
+    homeState.category = event.detail?.category || 'all';
+    homeState.activeSlideIndex = 0;
+    renderHomeContent();
+}
+
+function applyHomeSectionResult(sectionKey, result) {
+    if (result.status === 'fulfilled') {
+        homeState.sections[sectionKey] = Array.isArray(result.value) ? result.value : [];
+        homeState.statuses[sectionKey] = 'success';
+        return;
+    }
+
+    console.error(`Home section failed to load: ${sectionKey}`, result.reason);
+    homeState.sections[sectionKey] = [];
+    homeState.statuses[sectionKey] = 'error';
+}
+
+function renderHomeContent() {
+    renderHomeSection('trending', '#trendingGrid', 'Trending This Week', 'Error loading trending');
+    renderHomeSection('newReleases', '#newReleasesGrid', 'New Releases', 'Error loading new releases');
+    renderHomeSection('popular', '#popularGrid', 'Most Talked About', 'Error loading popular');
+    renderHomeCarousel();
+}
+
+function renderHomeSection(sectionKey, selector, sectionLabel, errorMessage) {
+    const sectionStatus = homeState.statuses[sectionKey];
+
+    if (sectionStatus === 'error') {
+        ui.showError(errorMessage, selector);
+        return;
+    }
+
+    if (sectionStatus !== 'success') {
+        ui.showLoading(selector);
+        return;
+    }
+
+    const filteredItems = filterHomeItems(homeState.sections[sectionKey], homeState.category)
+        .slice(0, HOME_SECTION_LIMIT);
+
+    if (filteredItems.length > 0) {
+        ui.populateGrid(selector, filteredItems);
+        return;
+    }
+
+    const categoryLabel = getHomeCategoryLabel(homeState.category).toLowerCase();
+    const emptyMessage = homeState.category === 'all' ?
+        `No titles are available in ${sectionLabel} right now.` :
+        `No ${categoryLabel} titles are available in ${sectionLabel} right now.`;
+
+    ui.showEmptyState(emptyMessage, selector);
+}
+
+function filterHomeItems(items = [], category = 'all') {
+    const genreId = HOME_CATEGORY_GENRES[category];
+    if (!genreId) return items;
+
+    return items.filter(item => getItemGenreIds(item).includes(genreId));
+}
+
+function getItemGenreIds(item) {
+    if (Array.isArray(item?.genre_ids)) return item.genre_ids;
+    if (Array.isArray(item?.genres)) return item.genres.map(genre => genre.id);
+    return [];
+}
+
+function getHomeCategoryLabel(category) {
+    return HOME_CATEGORY_LABELS[category] || HOME_CATEGORY_LABELS.all;
+}
+
+function renderHomeCarousel() {
     const hero = document.getElementById('homeHero');
-    if (!hero || hero.dataset.posterLoaded === 'true') return;
+    const carouselStage = document.getElementById('homeHeroCarousel');
+    const featuredPanel = document.getElementById('homeHeroFeatured');
+    const controls = document.getElementById('homeHeroControls');
 
-    const featuredItem = items.find(item => item?.poster_path || item?.backdrop_path);
-    if (!featuredItem) return;
+    if (!hero || !carouselStage) return;
 
-    const imageUrl = featuredItem.poster_path ?
-        api.getImageUrl(featuredItem.poster_path, 'poster') :
-        api.getImageUrl(featuredItem.backdrop_path, 'backdrop');
+    homeState.carouselItems = buildHomeCarouselItems();
+    stopHomeCarousel();
 
-    if (!imageUrl) return;
+    if (homeState.carouselItems.length === 0) {
+        carouselStage.innerHTML = '';
+        hero.classList.remove('hero-has-carousel');
+        if (featuredPanel) featuredPanel.hidden = true;
+        if (controls) controls.hidden = true;
+        return;
+    }
 
-    hero.style.setProperty('--hero-poster', `url("${imageUrl}")`);
-    hero.classList.add('hero-has-poster');
-    hero.dataset.posterLoaded = 'true';
+    if (homeState.activeSlideIndex >= homeState.carouselItems.length) {
+        homeState.activeSlideIndex = 0;
+    }
+
+    carouselStage.innerHTML = homeState.carouselItems
+        .map((item, index) => createHomeCarouselSlideMarkup(item, index === homeState.activeSlideIndex))
+        .join('');
+
+    hero.classList.add('hero-has-carousel');
+    renderHomeCarouselDots();
+    showHomeCarouselSlide(homeState.activeSlideIndex);
+
+    if (featuredPanel) featuredPanel.hidden = false;
+    if (controls) controls.hidden = homeState.carouselItems.length <= 1;
+
+    startHomeCarousel();
+}
+
+function buildHomeCarouselItems() {
+    const filteredItems = dedupeHomeItems([
+        ...filterHomeItems(homeState.sections.trending, homeState.category),
+        ...filterHomeItems(homeState.sections.newReleases, homeState.category),
+        ...filterHomeItems(homeState.sections.popular, homeState.category)
+    ]).filter(hasHomeCarouselImage);
+
+    if (filteredItems.length > 0) {
+        homeState.carouselUsesFallback = false;
+        return filteredItems.slice(0, HOME_CAROUSEL_LIMIT);
+    }
+
+    homeState.carouselUsesFallback = homeState.category !== 'all';
+    return dedupeHomeItems([
+        ...homeState.sections.trending,
+        ...homeState.sections.newReleases,
+        ...homeState.sections.popular
+    ])
+        .filter(hasHomeCarouselImage)
+        .slice(0, HOME_CAROUSEL_LIMIT);
+}
+
+function dedupeHomeItems(items = []) {
+    const seenIds = new Set();
+
+    return items.filter(item => {
+        if (!item?.id || seenIds.has(item.id)) return false;
+        seenIds.add(item.id);
+        return true;
+    });
+}
+
+function hasHomeCarouselImage(item) {
+    return Boolean(item?.poster_path || item?.backdrop_path);
+}
+
+function createHomeCarouselSlideMarkup(item, isActive) {
+    const imageUrl = item.poster_path ?
+        api.getImageUrl(item.poster_path, 'poster') :
+        api.getImageUrl(item.backdrop_path, 'backdrop');
+    const slidePosition = item.poster_path ? 'right 7% center' : 'center center';
+    const slideSize = item.poster_path ? 'auto 100%' : 'cover';
+
+    return `
+        <div
+            class="hero-carousel-slide${isActive ? ' is-active' : ''}"
+            style="--hero-slide-image: url('${imageUrl}'); --hero-slide-position: ${slidePosition}; --hero-slide-size: ${slideSize};"
+        ></div>
+    `;
+}
+
+function renderHomeCarouselDots() {
+    const dotsContainer = document.getElementById('homeHeroDots');
+    if (!dotsContainer) return;
+
+    dotsContainer.innerHTML = '';
+
+    homeState.carouselItems.forEach((item, index) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'hero-carousel-dot';
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', `Show featured movie ${index + 1}: ${item.title || item.name || 'Featured movie'}`);
+        dot.addEventListener('click', () => {
+            showHomeCarouselSlide(index);
+            restartHomeCarousel();
+        });
+        dotsContainer.appendChild(dot);
+    });
+
+    updateHomeCarouselDots();
+}
+
+function showHomeCarouselSlide(index) {
+    if (homeState.carouselItems.length === 0) return;
+
+    const totalSlides = homeState.carouselItems.length;
+    homeState.activeSlideIndex = (index + totalSlides) % totalSlides;
+
+    document.querySelectorAll('#homeHeroCarousel .hero-carousel-slide').forEach((slide, slideIndex) => {
+        slide.classList.toggle('is-active', slideIndex === homeState.activeSlideIndex);
+    });
+
+    updateHomeCarouselDots();
+    updateHomeFeaturedContent(homeState.carouselItems[homeState.activeSlideIndex]);
+}
+
+function updateHomeCarouselDots() {
+    document.querySelectorAll('#homeHeroDots .hero-carousel-dot').forEach((dot, index) => {
+        const isActive = index === homeState.activeSlideIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-selected', String(isActive));
+        dot.setAttribute('aria-pressed', String(isActive));
+        dot.tabIndex = isActive ? 0 : -1;
+    });
+}
+
+function updateHomeFeaturedContent(item) {
+    const label = document.getElementById('homeHeroLabel');
+    const title = document.getElementById('homeHeroTitle');
+    const meta = document.getElementById('homeHeroMeta');
+
+    if (label) {
+        label.textContent = homeState.category === 'all' || homeState.carouselUsesFallback ?
+            'Featured Now' :
+            `${getHomeCategoryLabel(homeState.category)} Spotlight`;
+    }
+
+    if (title) {
+        title.textContent = item.title || item.name || 'Featured movie';
+    }
+
+    if (meta) {
+        meta.textContent = buildHomeFeaturedMeta(item);
+    }
+}
+
+function buildHomeFeaturedMeta(item) {
+    const metaParts = [];
+    const releaseYear = item.release_date?.split('-')[0] || item.first_air_date?.split('-')[0];
+
+    if (releaseYear) metaParts.push(releaseYear);
+    if (item.vote_average) metaParts.push(`${item.vote_average.toFixed(1)}/10 rating`);
+    if (item.overview) metaParts.push(ui.truncateText(item.overview, 110));
+
+    return metaParts.join(' | ') || 'Fresh movie picks rotate automatically from the home page rows.';
+}
+
+function startHomeCarousel() {
+    stopHomeCarousel();
+
+    if (document.hidden || homeState.carouselItems.length <= 1) return;
+
+    homeState.carouselTimerId = window.setInterval(() => {
+        showHomeCarouselSlide(homeState.activeSlideIndex + 1);
+    }, HOME_CAROUSEL_INTERVAL_MS);
+}
+
+function stopHomeCarousel() {
+    if (!homeState.carouselTimerId) return;
+
+    window.clearInterval(homeState.carouselTimerId);
+    homeState.carouselTimerId = null;
+}
+
+function restartHomeCarousel() {
+    startHomeCarousel();
 }
 
 async function initializeMood() {

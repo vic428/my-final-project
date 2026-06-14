@@ -11,36 +11,14 @@ A personalized entertainment guide that solves decision fatigue by helping you f
 ## Features
 
 ### 1. Mood-Based Discovery
-Select your current mood and receive tailored recommendations mapped to matching genres, tones, and content tags.
-
 ### 2. Genre Browse
-Browse content by genre with layered filters for release year, runtime, age rating, and language.
-
 ### 3. Trending Content Feed
-Regularly updated feeds showcasing trending content organized by category:
-- Trending This Week
-- New Releases
-- Most Talked About
-
 ### 4. Movie & Show Detail Pages
-Each title displays:
-- Synopsis and cast information
-- User ratings and reviews
-- Trailer links
-- Age ratings and runtime
-- Streaming platform availability
-
 ### 5. Group Watch Mode
-Each participant inputs their preferences independently, and the app finds the best overlapping title match.
-
 ### 6. Personalized Recommendations
-The app learns from user ratings, saved titles, and mood history to serve increasingly relevant suggestions.
-
 ### 7. Watchlist / Save for Later
-Users save titles to a personal backlog, sortable and easy to access for planning movie nights.
-
 ### 8. Search Functionality
-Search by title, actor, director, or keyword with quick-glance results.
+
 
 ## Tech Stack
 
@@ -86,6 +64,23 @@ my-final-project/
 - **Fallback:** System default sans-serif
 
 ### Run the App
+
+1. Create a `.env` file in the project root with your API credentials:
+```bash
+TMDB_API_KEY=your_tmdb_api_key_here
+YOUTUBE_API_KEY=your_youtube_api_key_here
+```
+2. Install the project dependency:
+```bash
+npm install
+```
+3. Start the local server that loads environment variables for the browser app:
+```bash
+npm start
+```
+4. Open `http://localhost:8000`
+
+This project now reads API keys from environment variables at runtime. Static servers such as `python -m http.server` will not expose the required `env.json` endpoint.
 
 
 
@@ -173,25 +168,6 @@ All user data is stored locally in the browser's LocalStorage:
 
 No data is sent to external servers except for API requests to TMDB and YouTube.
 
-## Troubleshooting
-
-### "API Error: 401"
-- Check if your API keys are correct in `modules/api.js`
-- Verify keys are active in TMDB and Google Cloud Console
-
-### Trailers not loading
-- Make sure `YOUTUBE_API_KEY` is a YouTube Data API key, not an OAuth client ID
-- If the value ends with `.apps.googleusercontent.com`, create an API key in Google Cloud Console and paste that instead
-
-### Images not loading
-- Check if the image paths are being constructed correctly
-- Verify TMDB API key has image access permissions
-
-### Search not working
-- Ensure you're connected to the internet
-- Check browser console for API errors
-- Verify TMDB API is returning results
-
 ### LocalStorage errors
 - Clear browser cache and cookies
 - Check if LocalStorage is enabled in browser settings
@@ -200,14 +176,4 @@ No data is sent to external servers except for API requests to TMDB and YouTube.
 
 This project is for educational purposes.
 
-## Support
 
-For issues or questions:
-1. Check the browser console for error messages
-2. Verify API keys are configured correctly
-3. Test with different movies/TV shows
-4. Clear browser cache and try again
-
----
-
-**Built with ❤️ for film lovers everywhere.**

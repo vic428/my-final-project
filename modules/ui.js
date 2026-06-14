@@ -268,6 +268,18 @@ export function showError(message, selector = '#resultsGrid') {
 }
 
 /**
+ * Show a neutral empty state message
+ * @param {string} message - Empty state message
+ * @param {string} selector - CSS selector
+ */
+export function showEmptyState(message, selector = '#resultsGrid') {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.innerHTML = `<div class="state-message"><p class="muted-text">${message}</p></div>`;
+    }
+}
+
+/**
  * Show trailer modal
  * @param {string} videoId - YouTube video ID
  */

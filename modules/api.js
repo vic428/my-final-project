@@ -3,20 +3,33 @@
  * TMDB (The Movie Database) & YouTube Data API
  */
 
-const TMDB_API_KEY = '4aaa9e411549ee99db9d8dbcf54a79dc'; 
+globalThis.process ??= { env: {} };
+
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const YOUTUBE_API_KEY = 'AIzaSyAvD1aehxuCqGCIXYrPXBFVgPKL9t7Y5KE';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
 
-function validateYoutubeApiKey() {
-    if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === 'YOUR_YOUTUBE_API_KEY_HERE') {
-        console.warn('YouTube API key is not configured. Set YOUTUBE_API_KEY in modules/api.js.');
+function isPlaceholderValue(value) {
+    return !value || /^your_/i.test(value) || /^placeholder/i.test(value);
+}
+
+function validateTmdbApiKey() {
+    if (isPlaceholderValue(process.env.TMDB_API_KEY)) {
+        console.error('TMDB_API_KEY is not configured. Set it in your .env file.');
         return false;
     }
 
-    if (YOUTUBE_API_KEY.includes('.apps.googleusercontent.com')) {
+    return true;
+}
+
+function validateYoutubeApiKey() {
+    if (isPlaceholderValue(process.env.YOUTUBE_API_KEY)) {
+        console.warn('YOUTUBE_API_KEY is not configured. Set it in your .env file.');
+        return false;
+    }
+
+    if (process.env.YOUTUBE_API_KEY.includes('.apps.googleusercontent.com')) {
         console.error('YOUTUBE_API_KEY is using a Google OAuth client ID. Create a YouTube Data API key instead.');
         return false;
     }
@@ -31,8 +44,12 @@ function validateYoutubeApiKey() {
  * @returns {Promise<object>} API response
  */
 async function fetchFromTMDB(endpoint, params = {}) {
+    if (!validateTmdbApiKey()) {
+        throw new Error('TMDB_API_KEY is missing');
+    }
+
     const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
-    url.searchParams.append('api_key', TMDB_API_KEY);
+    url.searchParams.append('api_key', process.env.TMDB_API_KEY);
     
     Object.keys(params).forEach(key => {
         url.searchParams.append(key, params[key]);
@@ -252,7 +269,7 @@ export async function searchYoutubeTrailer(query) {
     url.searchParams.append('q', searchQuery);
     url.searchParams.append('type', 'video');
     url.searchParams.append('part', 'snippet');
-    url.searchParams.append('key', YOUTUBE_API_KEY);
+    url.searchParams.append('key', process.env.YOUTUBE_API_KEY);
     url.searchParams.append('maxResults', '1');
 
     try {
