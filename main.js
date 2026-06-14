@@ -57,8 +57,10 @@ function applyTheme(theme) {
 function initializeThemeToggle() {
     const toggle = document.getElementById('themeToggle');
     if (!toggle) return;
+    if (toggle.dataset.initialized === 'true') return;
 
     applyTheme(getInitialTheme());
+    toggle.dataset.initialized = 'true';
 
     toggle.addEventListener('click', () => {
         const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
@@ -89,8 +91,8 @@ function updateThemeMetaColor(theme) {
  */
 document.addEventListener('DOMContentLoaded', async () => {
     applyTheme(getInitialTheme());
-    await loadRuntimeEnv();
     initializeThemeToggle();
+    await loadRuntimeEnv();
 
     // Initialize event listeners
     eventHandler.setupEventListeners();
