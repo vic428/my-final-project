@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse movies and TV shows by genre, release year, runtime, and popularity with curated discovery filters from Film Discovery.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0A0A0C">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Film Discovery">
+    <meta property="og:title" content="Browse - Film Discovery">
+    <meta property="og:description" content="Browse movies and TV shows by genre, release year, runtime, and popularity with curated discovery filters from Film Discovery.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Browse - Film Discovery">
+    <meta name="twitter:description" content="Browse movies and TV shows by genre, release year, runtime, and popularity with curated discovery filters from Film Discovery.">
+    <title>Browse - Film Discovery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-browse">
+    <!-- Header/Navigation -->
+    <header>
+        <div class="logo">Film Discovery</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="mood.html">Mood</a>
+            <a href="discovery.html" class="active">Browse</a>
+            <a href="group.html">Group Watch</a>
+        </nav>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search...">
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Results Header -->
+            <div class="results-header" style="margin-top: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                <div>
+                    <h2 id="resultsTitle">Browse by Genre</h2>
+                    <p class="results-count" id="resultsCount"></p>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters" id="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Genre</label>
+                    <select class="filter-select" id="genreFilter">
+                        <option value="">All Genres</option>
+                        <option value="28">Action</option>
+                        <option value="12">Adventure</option>
+                        <option value="35">Comedy</option>
+                        <option value="80">Crime</option>
+                        <option value="18">Drama</option>
+                        <option value="27">Horror</option>
+                        <option value="10749">Romance</option>
+                        <option value="878">Sci-Fi</option>
+                        <option value="53">Thriller</option>
+                        <option value="10752">War</option>
+                        <option value="37">Western</option>
+                        <option value="16">Animation</option>
+                        <option value="10402">Music</option>
+                        <option value="9648">Mystery</option>
+                        <option value="10751">Family</option>
+                        <option value="36">History</option>
+                        <option value="10763">News</option>
+                        <option value="10767">Talk</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Release Year</label>
+                    <select class="filter-select" id="yearFilter">
+                        <option value="">Any Year</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2010">2010s</option>
+                        <option value="2000">2000s</option>
+                        <option value="1990">1990s</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Runtime</label>
+                    <select class="filter-select" id="runtimeFilter">
+                        <option value="">Any Length</option>
+                        <option value="90">Under 90 min</option>
+                        <option value="120">90-120 min</option>
+                        <option value="999">Over 120 min</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select class="filter-select" id="sortFilter">
+                        <option value="popularity.desc">Popularity</option>
+                        <option value="vote_average.desc">Rating</option>
+                        <option value="primary_release_date.desc">Release Date</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="grid grid-3" id="resultsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more">
+                <button class="btn btn-secondary" id="loadMoreBtn">Load More</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Film Discovery. All rights reserved. | <a href="#about">About Us</a> | <a href="#contact">Contact</a> | <a href="#privacy">Privacy Policy</a></p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

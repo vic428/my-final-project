@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore film and TV details including synopsis, cast, streaming availability, similar titles, trailers, and reviews on Film Discovery.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0A0A0C">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Film Discovery">
+    <meta property="og:title" content="Movie Details - Film Discovery">
+    <meta property="og:description" content="Explore film and TV details including synopsis, cast, streaming availability, similar titles, trailers, and reviews on Film Discovery.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Movie Details - Film Discovery">
+    <meta name="twitter:description" content="Explore film and TV details including synopsis, cast, streaming availability, similar titles, trailers, and reviews on Film Discovery.">
+    <title>Movie Details - Film Discovery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-detail">
+    <!-- Header/Navigation -->
+    <header>
+        <div class="logo">Film Discovery</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="mood.html">Mood</a>
+            <a href="discovery.html">Browse</a>
+            <a href="group.html">Group Watch</a>
+        </nav>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search...">
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Detail Header with Backdrop -->
+        <div class="detail-header" id="detailHeader">
+            <div class="detail-backdrop" id="backdrop"></div>
+        </div>
+
+        <div class="container">
+            <!-- Detail Content -->
+            <div class="detail-content" id="detailContent">
+                <!-- Poster -->
+                <div class="detail-poster" id="posterContainer">
+                    <img id="poster" src="" alt="Movie Poster">
+                </div>
+
+                <!-- Info -->
+                <div class="detail-info">
+                    <h1 id="title"></h1>
+                    
+                    <div class="detail-meta">
+                        <span id="year"></span>
+                        <span>•</span>
+                        <span id="runtime"></span>
+                        <span>•</span>
+                        <span id="rating"></span>
+                    </div>
+
+                    <div class="detail-rating" id="ratingStars">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <div class="detail-description">
+                        <p id="synopsis"></p>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button class="btn btn-primary" id="watchTrailerBtn">Watch Trailer</button>
+                        <button class="btn btn-success" id="addWatchlistBtn">Add to Watchlist</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streaming Providers -->
+            <div class="detail-section">
+                <h3>Available On</h3>
+                <div class="streaming-providers" id="streamingProviders">
+                    <p class="muted-text">Loading providers...</p>
+                </div>
+            </div>
+
+            <!-- Genres -->
+            <div class="detail-section">
+                <h3>Genres</h3>
+                <div id="genresList" style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Cast -->
+            <div class="detail-section">
+                <h3>Cast</h3>
+                <div class="cast-grid" id="castGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Similar Titles -->
+            <div class="detail-section">
+                <h3>Similar Titles</h3>
+                <div class="grid grid-5 rail-grid" id="similarTitles">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Review Section -->
+            <div class="detail-section">
+                <h3>Your Rating</h3>
+                <div class="review-form">
+                    <div class="review-rating">
+                        <label>Rate this title:</label>
+                        <div id="userRatingStars" style="display: flex; gap: var(--spacing-sm);">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: var(--spacing-lg);">Leave a Review</h4>
+                    <textarea class="review-textarea" id="reviewText" placeholder="Write your review here..."></textarea>
+                    <button class="btn btn-primary" id="submitReviewBtn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Trailer Modal -->
+    <div id="trailerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="position: relative; width: 90%; max-width: 800px; aspect-ratio: 16/9;">
+            <button id="closeTrailerBtn" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: #F0EEE8; font-size: 2rem; cursor: pointer;">×</button>
+            <iframe id="trailerFrame" width="100%" height="100%" style="border: none; border-radius: var(--radius-lg);" src="" allowfullscreen=""></iframe>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Film Discovery. All rights reserved. | <a href="#about">About Us</a> | <a href="#contact">Contact</a> | <a href="#privacy">Privacy Policy</a></p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

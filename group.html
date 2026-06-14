@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Use Group Watch Mode to compare preferences and find a movie night match everyone can enjoy with Film Discovery.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0A0A0C">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Film Discovery">
+    <meta property="og:title" content="Group Watch - Film Discovery">
+    <meta property="og:description" content="Use Group Watch Mode to compare preferences and find a movie night match everyone can enjoy with Film Discovery.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Group Watch - Film Discovery">
+    <meta name="twitter:description" content="Use Group Watch Mode to compare preferences and find a movie night match everyone can enjoy with Film Discovery.">
+    <title>Group Watch - Film Discovery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-group">
+    <!-- Header/Navigation -->
+    <header>
+        <div class="logo">Film Discovery</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="mood.html">Mood</a>
+            <a href="discovery.html">Browse</a>
+            <a href="group.html" class="active">Group Watch</a>
+        </nav>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search...">
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Group Watch Mode</h1>
+                    <p>Everyone inputs their preferences independently, and we find the best overlapping title match for the whole group.</p>
+                </div>
+            </section>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <!-- Group Setup Section -->
+                <div class="section">
+                    <h2>Create Your Group</h2>
+                    <div class="review-form">
+                        <div class="filter-group">
+                            <label class="filter-label">Number of Participants</label>
+                            <select class="filter-select" id="participantCount">
+                                <option value="2">2 People</option>
+                                <option value="3" selected>3 People</option>
+                                <option value="4">4 People</option>
+                                <option value="5">5 People</option>
+                                <option value="6">6 People</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" id="createGroupBtn" style="margin-top: var(--spacing-md);">Create Group</button>
+                    </div>
+                </div>
+
+                <!-- Participants Section -->
+                <div class="section" id="participantsSection" style="display: none;">
+                    <h2>Participants Preferences</h2>
+                    <div id="participantsContainer">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <button class="btn btn-success" id="findMatchBtn" style="margin-top: var(--spacing-lg); width: 100%;">Find Best Match</button>
+                </div>
+
+                <!-- Results Section -->
+                <div class="section" id="resultsSection" style="display: none;">
+                    <h2>Perfect Match!</h2>
+                    <div id="matchResults">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <button class="btn btn-secondary" id="startOverBtn" style="margin-top: var(--spacing-lg); width: 100%;">Start Over</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Film Discovery. All rights reserved. | <a href="#about">About Us</a> | <a href="#contact">Contact</a> | <a href="#privacy">Privacy Policy</a></p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search Film Discovery for movies and TV shows by title, actor, director, or keyword and quickly compare matching results.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0A0A0C">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Film Discovery">
+    <meta property="og:title" content="Search Results - Film Discovery">
+    <meta property="og:description" content="Search Film Discovery for movies and TV shows by title, actor, director, or keyword and quickly compare matching results.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Search Results - Film Discovery">
+    <meta name="twitter:description" content="Search Film Discovery for movies and TV shows by title, actor, director, or keyword and quickly compare matching results.">
+    <title>Search Results - Film Discovery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-results">
+    <!-- Header/Navigation -->
+    <header>
+        <div class="logo">Film Discovery</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="mood.html">Mood</a>
+            <a href="discovery.html">Browse</a>
+            <a href="group.html">Group Watch</a>
+        </nav>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search...">
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Results Header -->
+            <div class="results-header" style="margin-top: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                <div>
+                    <h2 id="resultsTitle">Search Results</h2>
+                    <p class="results-count" id="resultsCount"></p>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="grid grid-3" id="resultsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" style="text-align: center; padding: var(--spacing-xl); display: none;">
+                <h3>No results found</h3>
+                <p class="muted-text">Try searching for a different title, actor, or director.</p>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more">
+                <button class="btn btn-secondary" id="loadMoreBtn" style="display: none;">Load More</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Film Discovery. All rights reserved. | <a href="#about">About Us</a> | <a href="#contact">Contact</a> | <a href="#privacy">Privacy Policy</a></p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
