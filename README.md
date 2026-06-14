@@ -197,6 +197,6 @@ No data is sent to external servers except for API requests to TMDB and YouTube.
 
 ## License
 
-This project is for educational purposes.
+Note: This project is for educational purposes.
 
 
