@@ -106,11 +106,14 @@ export function setupCardClickEvents() {
  * Setup mood selection events
  */
 function setupMoodEvents() {
-    const moodCards = document.querySelectorAll('.mood-card');
+    const moodGrid = document.getElementById('moodGrid');
     const surpriseBtn = document.getElementById('surpriseBtn');
 
-    moodCards.forEach(card => {
-        card.addEventListener('click', (e) => {
+    if (moodGrid) {
+        moodGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.mood-card');
+            if (!card) return;
+
             // Remove previous selection
             document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('selected'));
             
@@ -118,14 +121,16 @@ function setupMoodEvents() {
             card.classList.add('selected');
             
             const mood = card.dataset.mood;
+            if (!mood) return;
+
             dataManager.saveMoodHistory(mood);
             
             // Navigate to discovery with mood filter after a short delay
-            setTimeout(() => {
-                window.location.href = `discovery.html?mood=${mood}`;
-            }, 300);
+            window.setTimeout(() => {
+                window.location.href = `discovery.html?mood=${encodeURIComponent(mood)}`;
+            }, 180);
         });
-    });
+    }
 
     if (surpriseBtn) {
         surpriseBtn.addEventListener('click', () => {
