@@ -1,13 +1,41 @@
-require('dotenv').config();
-
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const { URL } = require('url');
 
 const ROOT_DIR = __dirname;
-const PORT = Number(process.env.PORT) || 8000;
 const CLIENT_ENV_KEYS = ['TMDB_API_KEY', 'YOUTUBE_API_KEY'];
+
+function loadEnvFromFile(filePath) {
+    if (!fs.existsSync(filePath)) return;
+
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const lines = fileContents.split(/\r?\n/);
+
+    lines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine || trimmedLine.startsWith('#')) return;
+
+        const separatorIndex = trimmedLine.indexOf('=');
+        if (separatorIndex === -1) return;
+
+        const key = trimmedLine.slice(0, separatorIndex).trim();
+        const rawValue = trimmedLine.slice(separatorIndex + 1).trim();
+        const value = rawValue.replace(/^['"]|['"]$/g, '');
+
+        if (key && !process.env[key]) {
+            process.env[key] = value;
+        }
+    });
+}
+
+try {
+    require('dotenv').config();
+} catch (error) {
+    loadEnvFromFile(path.join(ROOT_DIR, '.env'));
+}
+
+const PORT = Number(process.env.PORT) || 8000;
 
 const MIME_TYPES = {
     '.css': 'text/css; charset=utf-8',
@@ -40,6 +68,13 @@ function sendFile(res, filePath) {
 function resolveRequestPath(requestPath) {
     const pathname = decodeURIComponent(requestPath);
     const normalizedPath = pathname === '/' ? '/index.html' : pathname;
+    const relativePath = normalizedPath.replace(/^\/+/, '');
+    const pathSegments = relativePath.split(/[\\/]/).filter(Boolean);
+
+    if (pathSegments.some(segment => segment.startsWith('.'))) {
+        return null;
+    }
+
     const absolutePath = path.normalize(path.join(ROOT_DIR, normalizedPath));
 
     if (!absolutePath.startsWith(ROOT_DIR)) {

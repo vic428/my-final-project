@@ -80,7 +80,28 @@ npm start
 ```
 4. Open `http://localhost:8000`
 
-This project now reads API keys from environment variables at runtime. Static servers such as `python -m http.server` will not expose the required `env.json` endpoint.
+This project now reads API keys from environment variables at runtime. Use `npm start` or `node server.js` so the app can read `.env` through the local runtime endpoint.
+
+Static servers such as `python -m http.server`, VS Code Live Server, or opening the HTML files directly will not expose the required `env.json` endpoint, and the app will show API loading errors like `Error loading trending`.
+
+### GitHub Pages Deployment
+
+This project can deploy to GitHub Pages with a public runtime config generated during the workflow. The API keys stay out of git, but they are still delivered to the browser at runtime, so you should restrict them in TMDB and Google Cloud.
+
+1. In your GitHub repository, go to `Settings -> Secrets and variables -> Actions`
+2. Add these repository secrets:
+   - `TMDB_API_KEY`
+   - `YOUTUBE_API_KEY`
+3. Push to the `main` branch
+4. In `Settings -> Pages`, set the source to `GitHub Actions`
+
+The workflow in `.github/workflows/deploy-pages.yml` generates `env.json` during deployment and publishes the site to GitHub Pages without committing the keys to the repository.
+
+For local testing of the same static config file, you can run:
+```bash
+npm run build:runtime-config
+```
+That generates a local `env.json` from `.env`, and the file stays ignored by git.
 
 
 
